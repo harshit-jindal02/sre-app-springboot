@@ -1,6 +1,6 @@
 # Stage 1: Build the application using a full Maven and JDK image
-# This image has multi-platform support, resolving the architecture error.
-FROM maven:3.8.5-openjdk-17 AS build
+# Explicitly setting the platform to linux/amd64 to ensure compatibility on all systems (e.g., Apple Silicon)
+FROM --platform=linux/amd64 maven:3.8.5-openjdk-17 AS build
 
 # Set the working directory
 WORKDIR /app
@@ -15,9 +15,9 @@ COPY src ./src
 # Package the application, skipping tests for a faster build
 RUN mvn package -DskipTests
 
-# Stage 2: Create the final, lightweight image
-# Use a JRE image which is smaller than a full JDK
-FROM openjdk:17-jre-slim
+# Stage 2: Create the final, lightweight image using a reliable base image
+# Explicitly setting the platform here as well for consistency.
+FROM --platform=linux/amd64 eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
