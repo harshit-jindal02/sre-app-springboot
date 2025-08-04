@@ -7,30 +7,34 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 6001
-      targetPort: 6001
+  - port: 6001
+    targetPort: 6001
   selector:
-    app: spring-app
+    app: test-app2
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-app-deployment
+  name: test-app2-deployment
   labels:
-    app: spring-app
+    app: test-app2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-app
+      app: test-app2
   template:
     metadata:
       labels:
-        app: spring-app
+        app: test-app2
+      annotations:
+        instrumentation.opentelemetry.io/inject: 'true'
+        instrumentation.opentelemetry.io/inject-java: 'true'
     spec:
       containers:
-        - name: spring-app
-          image: spring-app # Assumes you have built an image with this name
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 6001
+      - name: spring-app
+        image: user-app-test-app2:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 6001
+      serviceAccountName: traceassist-sa
